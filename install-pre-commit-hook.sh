@@ -1,5 +1,11 @@
 #!/usr/bin/env bash
 
+if ! command -v curl &> /dev/null
+then
+    echo "curl is required for this script to run"
+    exit 1
+fi
+
 echo "Installing gitleaks pre-commit hook..."
 
 git config --local --bool --add gitleaks.enabled true
