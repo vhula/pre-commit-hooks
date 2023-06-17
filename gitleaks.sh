@@ -12,17 +12,14 @@ then
     exit 1
 fi
 
-GITLEAKS_INSTALLED="yes"
-if ! command -v gitleaks &> /dev/null
-then
-    echo "gitleaks could not be found"
-    GITLEAKS_INSTALLED="no"
-fi
-
 GITHOOKS_DIR=~/.git-hooks
 GITLEAKS_URL="https://github.com/gitleaks/gitleaks/releases/download"
 GITLEAKS_VERSION="8.17.0"
 GITLEAKS_ENABLED=$(git config --bool gitleaks.enabled)
+
+if [[ ${GITLEAKS_ENABLED} != "true" ]]; then
+    exit 0
+fi
 
 function resolve_os() {
     if [[ "$OSTYPE" == "linux-gnu"* ]]; then
@@ -51,11 +48,19 @@ function resolve_arch() {
     fi
 }
 
+arch=$(resolve_arch)
+os=$(resolve_os)
+GITLEAKS_BIN=${GITHOOKS_DIR}/gitleaks_${GITLEAKS_VERSION}/gitleaks
+
+GITLEAKS_INSTALLED="yes"
+if [[ ! -f "${GITLEAKS_BIN}" ]]; then
+    echo "gitleaks could not be found"
+    GITLEAKS_INSTALLED="no"
+fi
+
 if [ "$GITLEAKS_INSTALLED" == "no" ]; then
     echo "installing gitleaks..."
 
-    arch=$(resolve_arch)
-    os=$(resolve_os)
     GITLEAKS_FILE="gitleaks_${GITLEAKS_VERSION}_${os}_${arch}.tar.gz"
     GITLEAKS_DOWNLOAD_URL="${GITLEAKS_URL}/v${GITLEAKS_VERSION}/${GITLEAKS_FILE}"
 
@@ -68,4 +73,6 @@ if [ "$GITLEAKS_INSTALLED" == "no" ]; then
     echo "gitleaks ${GITLEAKS_VERSION} has been installed."
 fi
 
-${GITHOOKS_DIR}/gitleaks_${GITLEAKS_VERSION}/gitleaks detect --source . -v
+if [[ ${GITLEAKS_ENABLED} == "true" ]]; then
+    ${GITHOOKS_DIR}/gitleaks_${GITLEAKS_VERSION}/gitleaks detect --source . -v --no-git
+fi
