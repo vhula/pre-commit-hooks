@@ -1,5 +1,9 @@
 # Gitleaks pre-commit hook
 
+## Demo
+
+![Image](./src/pre-commit-hook-demo.gif)
+
 ## Installation
 
 ```bash
