@@ -74,5 +74,5 @@ if [ "$GITLEAKS_INSTALLED" == "no" ]; then
 fi
 
 if [[ ${GITLEAKS_ENABLED} == "true" ]]; then
-    ${GITHOOKS_DIR}/gitleaks_${GITLEAKS_VERSION}/gitleaks detect --source . -v --no-git
+    ${GITLEAKS_BIN} detect --source . -v --no-git
 fi
